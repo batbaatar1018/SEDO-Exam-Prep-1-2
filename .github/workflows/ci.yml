@@ -1,4 +1,4 @@
-name: .NET CI Pipeline
+name: .NET Core CI 
 
 on:
   push:
@@ -12,41 +12,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '7.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore SoftUnibazar.sln
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build SoftUnibazar.sln --configuration Release --no-restore
 
-  unit_tests:
-    if: github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      - name: Run Unit Tests
-        run: dotnet test --filter Category=Unit
-
-  integration_tests:
-    if: github.ref == 'refs/heads/staging'
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      - name: Run Integration Tests
-        run: dotnet test --filter Category=Integration
+      - name: Tests
+        run: dotnet test SoftUnibazar.IntegrationTests/SoftUnibazar.IntegrationTests.csproj
