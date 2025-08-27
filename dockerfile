@@ -1,6 +1,6 @@
 FROM jenkins/jenkins:2.516.2-jdk21
 USER root
-RUN apt-get update && apt-get install -y lsb-release ca-certificates curl && \
+RUN apt-get update && apt-get install -y lsb-release dotnet-sdk-8.0 ca-certificates curl && \
     install -m 0755 -d /etc/apt/keyrings && \
     curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
     chmod a+r /etc/apt/keyrings/docker.asc && \
