@@ -1,4 +1,4 @@
-name: .NET Core CI 
+name: CI Pipeline
 
 on:
   push:
@@ -7,23 +7,28 @@ on:
       - staging
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '6.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore SoftUnibazar.sln
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build SoftUnibazar.sln --configuration Release --no-restore
+        run: dotnet build --no-restore
 
-      - name: Tests
-        run: dotnet test SoftUnibazar.IntegrationTests/SoftUnibazar.IntegrationTests.csproj
+      - name: Run tests
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+            dotnet test --filter "Category=Unit"
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            dotnet test --filter "Category=Integration"
+          fi
